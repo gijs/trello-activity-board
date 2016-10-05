@@ -1,0 +1,70 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Trello - Activity</title>
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="https://api.trello.com/1/client.js?key=87cc55584a57e48f2a73c18bc292346f"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <script>
+  Trello.authorize({
+    type: 'popup',
+    name: 'Getting Started Application',
+    scope: {
+      read: 'true',
+      write: 'true' },
+    expiration: 'never',
+    success: authenticationSuccess,
+    error: authenticationFailure
+  });
+
+  function authenticationSuccess(e) {
+    var success = function(successMsg) {
+
+      var content = '<table class="table table-responsive table-striped">';
+      successMsg.forEach(function(activity) {
+        var formattedRelativeDate = moment(activity.date).fromNow();
+        content += '<tr>';
+        content += '<td class="col-md-2"><strong> ';
+        content += activity.memberCreator.fullName;
+        content += '</strong></td>';
+        content += '<td class="col-md-5">';
+        content += '<a href="https://trello.com/c/' + activity.data.card.shortLink + '">';
+        content += activity.data.card.name;
+        content += '</a></td>';
+        content += '<td class="col-md-2">';
+        content += formattedRelativeDate;
+        content += '</td>';
+        content += '<td>';
+        content += activity.data.board.name;
+        content += '</td>';
+        content += '</tr>';
+      });
+      content += '</table>';
+      $('.activityList').append(content)
+    };
+
+    var error = function(errorMsg) {
+      console.log('Something went wrong: ', errorMsg);
+    };
+
+    Trello.get('boards/55f6d2b59a4402bd87efc72e/actions', success, error)
+  }
+
+  function authenticationFailure(e) {
+    console.log('Error!', e)
+  }
+
+  </script>
+</head>
+<body>
+<div class="container">
+<h3>Trello - Activity Log</h3>
+<div class="activityList"/>
+</div>
+</body>
+</html>
